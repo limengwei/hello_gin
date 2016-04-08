@@ -11,9 +11,7 @@ func main() {
 	r.LoadHTMLGlob("res/*.html")
 	r.Static("/static", "res/static")
 
-	authorized := r.Group("/", interceptor)
-
-	authorized.GET("/", index)
+	r.GET("/", index)
 
 	//	authorized.GET("/blog", home)
 	//	authorized.GET("/editor", editor)
@@ -25,13 +23,13 @@ func main() {
 }
 
 func interceptor(c *gin.Context) {
-	_, err := c.GetCookie("cookieee")
+	_, err := c.Cookie("cookieeee")
 
 	if err != nil {
-		c.HTML(200, "login.html", gin.H{"msg": "登陆失败"})
-		return
+		c.Redirect(200, "/login")
+	} else {
+		c.Redirect(200, "/")
 	}
-	c.Redirect(200, "/")
 }
 
 func index(c *gin.Context) {
