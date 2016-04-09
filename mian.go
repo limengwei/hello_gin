@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,59 +11,110 @@ func main() {
 	r := gin.Default()
 	r.LoadHTMLGlob("res/*.html")
 	r.Static("/static", "res/static")
+	r.NoRoute(notfound)
 
-	r.GET("/", index)
+	authorized := r.Group("/", interceptor)
+	authorized.GET("/", index)
+	authorized.Any("/editor", editor)
 
-	//	authorized.GET("/blog", home)
-	//	authorized.GET("/editor", editor)
-	//	authorized.POST("/putlog", putlog)
-
+	r.GET("/logout", logout)
 	r.Any("/login", login)
 
-	r.Run()
+	r.Run(":80")
 }
 
 func interceptor(c *gin.Context) {
-	_, err := c.Cookie("cookieeee")
+	cookie, err := c.Cookie("cookieee")
 
 	if err != nil {
-		c.Redirect(200, "/login")
+		c.Redirect(302, "/login")
 	} else {
-		c.Redirect(200, "/")
+		if cookie != "1024" {
+			c.Redirect(302, "/login")
+		}
 	}
-}
 
-func index(c *gin.Context) {
-	c.HTML(200, "index.html", nil)
 }
 
 func login(c *gin.Context) {
 	if c.Request.Method == "POST" {
-		if c.PostForm("name") == "admin" {
-			c.SetCookie("cookieee", "cookiee-val", 1024, "", "localhost", true, true)
-			c.Redirect(200, "/index")
+		if c.PostForm("name") == "admin" && c.PostForm("pwd") == "admin" {
+			setCookie(c)
+
+			c.Redirect(302, "/")
 		} else {
 			c.HTML(200, "login.html", gin.H{"msg": "登陆失败"})
 		}
-	} else {
+	}
+
+	if c.Request.Method == "GET" {
 		c.HTML(200, "login.html", nil)
 	}
+
 }
 
-func home(c *gin.Context) {
-	titles := []string{"AAA", "BBB", "CCC"}
-	c.HTML(200, "index.html", gin.H{"titles": titles})
+var arts []string = []string{"AAA", "BBB", "CCC", "CCC", "CCC", "CCC", "CCC"}
+
+func index(c *gin.Context) {
+
+	var ip, l, r int
+
+	p, _ := c.GetQuery("p")
+
+	ip, _ = strconv.Atoi(p)
+
+	l = ip - 1
+	r = ip + 1
+
+	if l < 1 {
+		l = 1
+		r = 2
+	}
+
+	c.HTML(200, "index.html", gin.H{"titles": arts, "l": l, "r": r})
 }
 
 func editor(c *gin.Context) {
+	if c.Request.Method == "POST" {
+		fmt.Println("title:", c.PostForm("title"))
+		fmt.Println("content:", c.PostForm("content"))
 
-	c.HTML(200, "editor.html", nil)
+		arts = append(arts, c.PostForm("title"))
+		c.Redirect(302, "/")
+	}
+
+	if c.Request.Method == "GET" {
+		c.HTML(200, "editor.html", nil)
+	}
 }
 
-func putlog(c *gin.Context) {
+//生成cookie
+func setCookie(c *gin.Context) {
+	cookiename := "cookieee"
+	cookieval := "1024"
+	maxAge := 1024
+	path := ""
+	domain := "localhost"
+	secure := false
+	httpOnly := false
+	c.SetCookie(cookiename, cookieval, maxAge, path, domain, secure, httpOnly)
+}
 
-	fmt.Println("title:", c.PostForm("title"))
-	fmt.Println("content:", c.PostForm("content"))
+//退出登录(cookie置空)
+func logout(c *gin.Context) {
+	cookiename := "cookieee"
+	cookieval := ""
+	maxAge := 1024
+	path := ""
+	domain := "localhost"
+	secure := false
+	httpOnly := false
+	c.SetCookie(cookiename, cookieval, maxAge, path, domain, secure, httpOnly)
 
-	c.Redirect(302, "/")
+	c.Redirect(302, "/login")
+}
+
+//
+func notfound(c *gin.Context) {
+	c.HTML(404, "404.html", nil)
 }
