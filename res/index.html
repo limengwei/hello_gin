@@ -2,6 +2,36 @@
 {{template "navbar" .}}
 
 
-<div class="container" style="padding-top: 70px">
-<h1>heloooooooooooooooooo</h1>
-<div>
+<div class="row" style="padding-top: 70px">
+		<div class="container center-block">
+				
+				<div class="col-sm-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+						<h3>最新</h3>
+						</div>
+						
+						<ul class="list-group">
+						{{range $title:=.titles}}
+						
+						<li class="list-group-item title">{{$title}}</li>
+						
+						{{end}}
+
+						</ul>
+					</div>
+			
+					<nav>
+					  <ul class="pager">
+						
+   						<li><a href="/?p={{.l}}">上一页</a></li>
+	
+					    <li><a href="/?p={{.r}}">下一页</a></li>
+					  </ul>
+					</nav>
+		
+
+				</div>
+			</div>
+		</div>
+	</div>
