@@ -13,16 +13,37 @@
         </div>
     </div><!-- /.container-fluid -->
 </nav>
-<div class="container" style="width:30%; padding-top: 70px">
+
+<style>
+.bg{
+	background-image: url("//assetcdn.500px.org/assets/home/home_cover-22d4c02977bbe00636e22f9aa653bd84.jpg");
+    background-position-x: 50%;
+    background-position-y: 50%;
+    background-size: cover;
+    background-repeat-x: no-repeat;
+    background-repeat-y: no-repeat;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+    background-color: rgb(82, 85, 88);
+	height:100%;
+	width:100%;
+	position:absolute;
+}
+</style>
+
+<div class="bg">
+<div class="container" style="width:30%; padding-top: 150px">
 
 <form action="/login" method="post">
-<h2>Loginnnn</h2>
+<h1>Loginnnn</h1>
 <br>
 <input type="text" name="name" class="form-control input-lg"  placeholder="输入用户名"/>
 <br>
 <input type="password" name="pwd" class="form-control input-lg" placeholder="输入用密码"/>
 <br>
-<input type="submit" class="btn btn-primary btn-lg"/>
+<input type="submit" class="btn btn-primary btn-lg"/> {{.msg}}
 </form>
 
+</div>
 </div>
