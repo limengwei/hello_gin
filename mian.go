@@ -98,7 +98,7 @@ func setCookie(c *gin.Context) {
 	cookieval := "1024"
 	maxAge := 102400
 	path := ""
-	domain := "192.168.1.18"
+	domain := "localhost"
 	secure := false
 	httpOnly := false
 	c.SetCookie(cookiename, cookieval, maxAge, path, domain, secure, httpOnly)
@@ -110,7 +110,7 @@ func logout(c *gin.Context) {
 	cookieval := ""
 	maxAge := 102400
 	path := ""
-	domain := "192.168.1.18"
+	domain := "localhost"
 	secure := false
 	httpOnly := false
 	c.SetCookie(cookiename, cookieval, maxAge, path, domain, secure, httpOnly)

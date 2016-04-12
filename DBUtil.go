@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -31,12 +32,16 @@ func initDB() {
 }
 
 func insert(a article) {
-	stmt, err := db.Prepare("insert into article(title,body,time,author,cate) values(?,?)")
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	defer stmt.Close()
+	//	initDB()
 
-	stmt.Exec(a.title, a.body)
+	//	stmt, err := db.Prepare("insert into article(title,body,time,author,cate) values(?,?)")
+	//	if err != nil {
+	//		log.Fatal(err)
+	//		return
+	//	}
+	//	defer stmt.Close()
+
+	//	stmt.Exec(a.title, a.body)
+
+	fmt.Println(a.title, a.body)
 }
