@@ -16,32 +16,33 @@ type article struct {
 var db *sql.DB
 
 func initDB() {
-	if db != nil {
-		return
-	}
+	var err error
 
-	db, err := sql.Open("mysql", "root:@/godb")
+	db, err = sql.Open("mysql", "root:@/godb")
 	if err != nil {
 		log.Fatalf("Open database error: %s\n", err)
 	}
-	defer db.Close()
+
 	err = db.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func insert(a article) {
-	//	initDB()
+func insert(a *article) {
+	initDB()
 
-	//	stmt, err := db.Prepare("insert into article(title,body,time,author,cate) values(?,?)")
-	//	if err != nil {
-	//		log.Fatal(err)
-	//		return
-	//	}
-	//	defer stmt.Close()
+	stmt, err := db.Prepare("insert into article(title, content) values(?, ?)")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer stmt.Close()
 
-	//	stmt.Exec(a.title, a.body)
+	stmt.Exec(a.title, a.body)
 
-	fmt.Println(a.title, a.body)
+	fmt.Println(a.title)
+
+	defer db.Close()
+
 }
