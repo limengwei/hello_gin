@@ -39,7 +39,7 @@ func crawl(url string, c *gin.Context) {
 }
 
 //分页
-var a article
+//var a article
 
 func crawlList(url string, c *gin.Context) {
 
@@ -60,7 +60,7 @@ func crawlList(url string, c *gin.Context) {
 
 		if exists {
 			//crawlDetail(detailUrl, c)
-			a = article{}
+			a := new(article)
 			a.title = title.Text()
 			a.body = summary.Text()
 
