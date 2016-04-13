@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	openDB()
+
 	r := gin.Default()
 	r.LoadHTMLGlob("res/*.html")
 	r.Static("/static", "res/static")
@@ -23,6 +25,7 @@ func main() {
 	r.Any("/login", login)
 
 	r.Run(":80")
+
 }
 
 //拦截器
@@ -65,6 +68,14 @@ func index(c *gin.Context) {
 	cate := c.Params.ByName("cate")
 	fmt.Println("--cate--", cate)
 
+	var a Article
+
+	fmt.Println("--HasTable--", db.HasTable("article"))
+
+	db.Find(&a)
+
+	//	fmt.Println("--Count--")
+
 	c.HTML(200, "index.html", gin.H{"titles": arts, "l": l, "r": r})
 }
 
@@ -73,6 +84,8 @@ func art(c *gin.Context) {
 	l, r := getPagetOption(c)
 	cate := c.Params.ByName("cate")
 	fmt.Println("--cate--", cate)
+	var arti Article
+	arts := db.Find(arti).Offset(0).Limit(10)
 
 	c.HTML(200, "index.html", gin.H{"titles": arts, "l": l, "r": r})
 }
@@ -83,7 +96,6 @@ func editor(c *gin.Context) {
 		fmt.Println("title:", c.PostForm("title"))
 		fmt.Println("content:", c.PostForm("content"))
 
-		arts = append(arts, c.PostForm("title"))
 		c.Redirect(302, "/")
 	}
 
