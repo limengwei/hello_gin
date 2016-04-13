@@ -7,6 +7,8 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
+//http://xorm.io/ 看看
+
 var db *gorm.DB
 
 func openDB() {
@@ -19,6 +21,7 @@ func openDB() {
 }
 
 type Article struct {
-	title string
-	//body  string
+	Id    int
+	Title string
+	Body  string
 }

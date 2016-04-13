@@ -61,7 +61,7 @@ func crawlList(url string, c *gin.Context) {
 
 			//crawlDetail(detailUrl, c)
 			a := new(Article)
-			a.title = title.Text()
+			a.Title = title.Text()
 			//a.summary = summary.Text()
 
 			crawlDetail(a, detailUrl, c)
@@ -83,7 +83,7 @@ func crawlDetail(a *Article, url string, c *gin.Context) {
 
 	//fmt.Println("--文章长度--", len(body)) //字符串截取
 
-	db.Create(a)
-	fmt.Println("--NewRecord--", db.NewRecord(a)) //插入数据库
+	db.Debug().Create(a)
+	//	fmt.Println("--NewRecord--", db.NewRecord(a)) //插入数据库
 	//db.Exec("insert into article (title,body) values(?,?)", a.title, a.body)
 }
