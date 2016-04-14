@@ -3,21 +3,21 @@ package main
 import (
 	"log"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/core"
+	"github.com/go-xorm/xorm"
 )
 
-//http://xorm.io/ 看看
-
-var db *gorm.DB
+var db *xorm.Engine
 
 func openDB() {
 	var err error
-	db, err = gorm.Open("mysql", "root:@/godb?charset=utf8&parseTime=True&loc=Local")
+	db, err = xorm.NewEngine("mysql", "root:@/godb?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		log.Fatalf("Open database error: %s\n", err)
 	}
-	db.SingularTable(true)
+	db.ShowSQL(true)
+	db.Logger().SetLevel(core.LOG_DEBUG)
 }
 
 type Article struct {

@@ -68,13 +68,13 @@ func index(c *gin.Context) {
 	cate := c.Params.ByName("cate")
 	fmt.Println("--cate--", cate)
 
-	var a Article
-
-	fmt.Println("--HasTable--", db.HasTable("article"))
-
-	db.Find(&a)
-
-	//	fmt.Println("--Count--")
+	as := make([]Article, 0)
+	err := db.Find(&as)
+	if err != nil {
+		fmt.Println("--err--", err)
+	} else {
+		fmt.Println("--err--", len(as))
+	}
 
 	c.HTML(200, "index.html", gin.H{"titles": arts, "l": l, "r": r})
 }
@@ -84,8 +84,9 @@ func art(c *gin.Context) {
 	l, r := getPagetOption(c)
 	cate := c.Params.ByName("cate")
 	fmt.Println("--cate--", cate)
-	var arti Article
-	arts := db.Find(arti).Offset(0).Limit(10)
+	as := make([]Article, 0)
+
+	db.Find(&as)
 
 	c.HTML(200, "index.html", gin.H{"titles": arts, "l": l, "r": r})
 }
