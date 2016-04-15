@@ -1,0 +1,58 @@
+{{template "header" .}}
+<nav class="navbar navbar-default navbar-fixed-top" style="opacity: .9" role="navigation">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Hello</a>
+        </div>
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+<div >
+<div class="container" style="width:30%; padding-top: 150px">
+
+<h1>Spiderrr</h1>
+<br>
+
+   <div class="input-group">
+      <input type="text" name="msg" value="hello websocket" class="form-control" placeholder="输入消息...">
+      <span class="input-group-btn">
+        <button class="btn btn-default" id="send">Send!</button>
+      </span>
+    </div><!-- /input-group -->
+
+	<div class="panel panel-default">
+	 <div class="panel-body" id="log">
+	   Basic panel example
+	 </div>
+	</div>
+
+</div>
+</div>
+
+<script>
+window.onload = main;
+
+var ws;
+
+function main(){
+	$("#send").click(Send())
+}
+
+function Send(){
+	ws=new Websocket('ws://localhost/ws');
+	ws.onopen=OnOpen;
+	ws.onmessage =OnMessage;
+}
+
+function OnOpen(event){
+	ws.send('hello websocket')
+}
+
+function OnMessage(event){
+	$("#log").html(event.data)
+}
+
+
+</script>

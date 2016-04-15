@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/net/websocket"
 )
 
 func main() {
@@ -20,6 +21,7 @@ func main() {
 	authorized.GET("/art/:cate", art)
 	authorized.Any("/editor", editor)
 	authorized.Any("/sp", spider)
+	authorized.Any("/chat", chat)
 
 	r.GET("/logout", logout)
 	r.Any("/login", login)
@@ -103,6 +105,35 @@ func editor(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		c.HTML(200, "editor.html", nil)
 	}
+}
+
+//聊天页面
+func chat(c *gin.Context) {
+
+	c.HTML(200, "chat.html", nil)
+}
+
+//接收消息 发送消息
+func OnWebSocket(ws *websocket.Conn) {
+
+	defer ws.Close()
+	var err error
+	var str string
+	for {
+		err = websocket.Message.Receive(ws, &str)
+		if err != nil {
+			break
+		}
+		fmt.Println("从客户端收到:", str)
+		str = "hello, I'm server."
+
+		err = websocket.Message.Send(ws, str)
+		if err != nil {
+			break
+		}
+		fmt.Println("向客户端发送：", str)
+	}
+
 }
 
 //生成cookie
