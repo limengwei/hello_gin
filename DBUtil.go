@@ -11,6 +11,7 @@ import (
 var db *xorm.Engine
 
 func openDB() {
+	
 	var err error
 	db, err = xorm.NewEngine("mysql", "root:@/godb?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
