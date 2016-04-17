@@ -2,14 +2,20 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/net/websocket"
+	"github.com/gorilla/websocket"
 )
+
+var ConnMap map[string]*websocket.Conn
 
 func main() {
 	openDB()
+
+	ConnMap = make(map[string]*websocket.Conn)
 
 	r := gin.Default()
 	r.LoadHTMLGlob("res/*.html")
@@ -22,9 +28,12 @@ func main() {
 	authorized.Any("/editor", editor)
 	authorized.Any("/sp", spider)
 	authorized.Any("/chat", chat)
+	authorized.Any("/ws/:uname", OnWebSocket)
+	authorized.Any("/gitstar")
 
 	r.GET("/logout", logout)
 	r.Any("/login", login)
+	r.Any("/oauth_github_callback", oauth_github_callback)
 
 	r.Run(":80")
 
@@ -48,7 +57,7 @@ func interceptor(c *gin.Context) {
 func login(c *gin.Context) {
 	if c.Request.Method == "POST" {
 		if c.PostForm("name") == "admin" && c.PostForm("pwd") == "admin" {
-			setCookie(c)
+			setCookie("test", c)
 
 			c.Redirect(302, "/")
 		} else {
@@ -59,7 +68,50 @@ func login(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		c.HTML(200, "login.html", nil)
 	}
+}
 
+//github授权回调
+func oauth_github_callback(c *gin.Context) {
+	var err error
+	var resp *http.Response
+	var res []byte
+
+	code, exists := c.GetQuery("code")
+	if exists {
+
+		//请求token
+		resp, err = http.Get("https://github.com/login/oauth/access_token?client_id=b270b5c94db796d87e22&client_secret=de82aebab00a7348ff658ef4432574d2ba087862&code=" + code)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		//解析结果
+		res, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		//获取用户信息
+		resp, err = http.Get("https://api.github.com/user?" + string(res))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		//解析结果
+		res, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println(string(res))
+		c.Redirect(302, "/")
+
+		defer resp.Body.Close()
+	}
 }
 
 var arts []string = []string{"AAA", "BBB", "CCC", "CCC", "CCC", "CCC", "CCC"}
@@ -70,13 +122,13 @@ func index(c *gin.Context) {
 	cate := c.Params.ByName("cate")
 	fmt.Println("--cate--", cate)
 
-	as := make([]Article, 0)
-	err := db.Find(&as)
-	if err != nil {
-		fmt.Println("--err--", err)
-	} else {
-		fmt.Println("--err--", len(as))
-	}
+	//	as := make([]Article, 0)
+	//	err := db.Find(&as)
+	//	if err != nil {
+	//		fmt.Println("--err--", err)
+	//	} else {
+	//		fmt.Println("--err--", len(as))
+	//	}
 
 	c.HTML(200, "index.html", gin.H{"titles": arts, "l": l, "r": r})
 }
@@ -86,9 +138,9 @@ func art(c *gin.Context) {
 	l, r := getPagetOption(c)
 	cate := c.Params.ByName("cate")
 	fmt.Println("--cate--", cate)
-	as := make([]Article, 0)
+	//	as := make([]Article, 0)
 
-	db.Find(&as)
+	//	db.Find(&as)
 
 	c.HTML(200, "index.html", gin.H{"titles": arts, "l": l, "r": r})
 }
@@ -107,39 +159,10 @@ func editor(c *gin.Context) {
 	}
 }
 
-//聊天页面
-func chat(c *gin.Context) {
-
-	c.HTML(200, "chat.html", nil)
-}
-
-//接收消息 发送消息
-func OnWebSocket(ws *websocket.Conn) {
-
-	defer ws.Close()
-	var err error
-	var str string
-	for {
-		err = websocket.Message.Receive(ws, &str)
-		if err != nil {
-			break
-		}
-		fmt.Println("从客户端收到:", str)
-		str = "hello, I'm server."
-
-		err = websocket.Message.Send(ws, str)
-		if err != nil {
-			break
-		}
-		fmt.Println("向客户端发送：", str)
-	}
-
-}
-
 //生成cookie
-func setCookie(c *gin.Context) {
+func setCookie(cookieVal string, c *gin.Context) {
 	cookiename := "cookieee"
-	cookieval := "1024"
+	cookieval := cookieVal
 	maxAge := 102400
 	path := ""
 	domain := "localhost"
