@@ -83,13 +83,13 @@ func crawlDetail(a *Article, url string, c *gin.Context) {
 
 	//fmt.Println("--文章长度--", len(body)) //字符串截取
 
-	count, e := db.Insert(a)
+	//	count, e := db.Insert(a)
 
-	if e != nil {
-		fmt.Println("--Insert-e-", e)
-	} else {
-		fmt.Println("--Insert-c-", count)
-	}
+	//	if e != nil {
+	//		fmt.Println("--Insert-e-", e)
+	//	} else {
+	//		fmt.Println("--Insert-c-", count)
+	//	}
 	//	fmt.Println("--NewRecord--", db.NewRecord(a)) //插入数据库
 	//db.Exec("insert into article (title,body) values(?,?)", a.title, a.body)
 }

@@ -35,15 +35,24 @@
 <div class="bg">
 <div class="container" style="width:30%; padding-top: 150px">
 
-<form action="/login" method="post">
+<!--
 <h1>Loginnnn</h1>
 <br>
+<form action="/login" method="post">
 <input type="text" name="name" class="form-control input-lg"  placeholder="输入用户名"/>
 <br>
 <input type="password" name="pwd" class="form-control input-lg" placeholder="输入用密码"/>
 <br>
-<input type="submit" class="btn btn-primary btn-lg"/> {{.msg}}
+<input type="submit" class="btn btn-primary btn-lg" value="登录"/> 
+{{.msg}}
 </form>
+-->
+<div class="jumbotron">
+<h1>Loginnnn</h1>
+<br>
+    Hello，world!&nbsp;&nbsp;&nbsp;使请用&nbsp;<a href="https://github.com/login/oauth/authorize?client_id=b270b5c94db796d87e22&scope=user,public_repo" class="btn btn-primary btn-lg">github</a>&nbsp;登录
+</div>
+
 
 </div>
 </div>
