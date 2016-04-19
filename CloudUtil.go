@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -8,15 +9,18 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ChimeraCoder/gojson"
 	"github.com/gin-gonic/gin"
 )
 
-type Pserson struct {
+type User struct {
 	Id     int    `json:"id"`
 	Name   string `json:"login"`
 	Avatar string `json:"avatar_url"`
 	Url    string `json:"url"`
+}
+
+type Result struct {
+	Results []User `json:"results"`
 }
 
 const (
@@ -27,18 +31,27 @@ const (
 )
 
 func users(c *gin.Context) {
-	body, _ := sendGet(BaseURL+"/classes/_User", nil)
+	body, _ := sendGet(BaseURL+"/classes/Person", nil)
 
-	c.JSON(200, "users")
+	bbody, _ := ioutil.ReadAll(body)
 
-	person, err := json2struct.Generate(body, "Pserson", "main")
+	fmt.Println(string(bbody))
+
+	var result Result
+
+	err := json.Unmarshal(bbody, &result)
 
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	fmt.Println(person)
+	var user User
+
+	user = result.Results[0]
+
+	fmt.Println(user)
+
 }
 
 //Get请求
@@ -58,7 +71,7 @@ func sendPost(url string, params url.Values) (io.Reader, error) {
 
 //通用请求
 func sendRequest(method string, url string, params url.Values) (io.Reader, error) {
-	client := &http.Client{}
+	client := http.DefaultClient
 	req, err := http.NewRequest(method, url, ioutil.NopCloser(strings.NewReader(params.Encode())))
 	if err != nil {
 		fmt.Println(err)
@@ -73,7 +86,6 @@ func sendRequest(method string, url string, params url.Values) (io.Reader, error
 		fmt.Println(err)
 		return nil, err
 	}
-	//defer res.Body.Close()
 
 	return res.Body, nil
 }
