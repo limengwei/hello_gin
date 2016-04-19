@@ -13,7 +13,7 @@ import (
 var ConnMap map[string]*websocket.Conn
 
 func main() {
-	openDB()
+	//openDB()
 
 	ConnMap = make(map[string]*websocket.Conn)
 
@@ -34,6 +34,8 @@ func main() {
 	r.GET("/logout", logout)
 	r.Any("/login", login)
 	r.Any("/oauth_github_callback", oauth_github_callback)
+
+	r.Any("/test", users)
 
 	r.Run(":80")
 
