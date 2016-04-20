@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -35,7 +36,7 @@ func main() {
 	r.Any("/login", login)
 	r.Any("/oauth_github_callback", oauth_github_callback)
 
-	r.Any("/test", users)
+	//r.Any("/test", CountUser)
 
 	r.Run(":80")
 
@@ -103,14 +104,26 @@ func oauth_github_callback(c *gin.Context) {
 		}
 
 		//解析结果
-		res, err = ioutil.ReadAll(resp.Body)
+		data, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		fmt.Println(string(res))
-		c.Redirect(302, "/")
+		var u User
+		err = json.Unmarshal(data, &u)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		if u.Name == "" {
+			c.HTML(200, "login.html", gin.H{"msg": "非法请求"})
+			return
+		}
+
+		userCount(u)
+
+		fmt.Println(u)
 
 		defer resp.Body.Close()
 	}
